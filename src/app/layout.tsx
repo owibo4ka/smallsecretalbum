@@ -48,8 +48,11 @@ export default function RootLayout({
         <div className="flex-1">{children}</div>
 
         <footer className="border-t border-zinc-200 dark:border-zinc-800">
-          <div className="mx-auto max-w-2xl px-4 py-6 text-sm text-zinc-500">
-            © {new Date().getFullYear()} Olha Rykhliuk
+          <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-6 text-sm text-zinc-500">
+            <span>© {new Date().getFullYear()} Olha Rykhliuk</span>
+            <Link href="/admin/posts" className="hover:text-zinc-900 dark:hover:text-zinc-100">
+              Admin
+            </Link>
           </div>
         </footer>
       </body>
