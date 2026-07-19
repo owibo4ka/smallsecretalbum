@@ -1,21 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Urbanist } from "next/font/google";
+import Image from "next/image";
 import Link from "next/link";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const urbanist = Urbanist({
+  variable: "--font-urbanist",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "Olha's Photography Blog",
-  description: "Photography writing and galleries by Olha.",
+  title: "smallsecretalbum",
+  description: "Street scenes and small secrets. Photography by Bara Bolka.",
 };
 
 export default function RootLayout({
@@ -24,36 +21,55 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
-        <header className="border-b border-zinc-200 dark:border-zinc-800">
-          <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-4">
-            <Link href="/" className="font-semibold tracking-tight">
-              Olha&apos;s Photography Blog
+    <html lang="en" className={`${urbanist.variable} h-full antialiased`}>
+      <body className="flex min-h-full flex-col text-[14px]">
+        <header
+          id="top"
+          className="flex items-center justify-between gap-4 px-5 py-3"
+        >
+          <div className="flex items-center gap-1.5">
+            <Link href="/" className="font-semibold whitespace-nowrap">
+              smallsecretalbum
             </Link>
-            <nav className="flex gap-4 text-sm text-zinc-600 dark:text-zinc-400">
-              <Link href="/" className="hover:text-zinc-900 dark:hover:text-zinc-100">
-                Home
-              </Link>
-              <Link href="/about" className="hover:text-zinc-900 dark:hover:text-zinc-100">
-                About
-              </Link>
-            </nav>
+            <span className="h-4 w-px shrink-0 bg-ink" aria-hidden="true" />
+            <p className="leading-[1.3] text-ink/90">
+              Street scenes and small secrets. Photography by{" "}
+              <span className="font-semibold">Bara Bolka.</span>
+            </p>
           </div>
+
+          <nav className="flex shrink-0 items-center gap-3 font-semibold">
+            <Link href="/about" className="transition-opacity hover:opacity-60">
+              about
+            </Link>
+            <Link
+              href="/print-shop"
+              className="transition-opacity hover:opacity-60"
+            >
+              print shop
+            </Link>
+          </nav>
         </header>
 
         <div className="flex-1">{children}</div>
 
-        <footer className="border-t border-zinc-200 dark:border-zinc-800">
-          <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-6 text-sm text-zinc-500">
-            <span>© {new Date().getFullYear()} Olha Rykhliuk</span>
-            <Link href="/admin/posts" className="hover:text-zinc-900 dark:hover:text-zinc-100">
-              Admin
-            </Link>
-          </div>
+        <footer className="flex items-center justify-between gap-4 px-5 pt-16 pb-5">
+          <p className="leading-[1.3]">
+            © smallsecretalbum, {new Date().getFullYear()}
+          </p>
+          <a
+            href="#top"
+            className="flex items-center gap-0.5 font-semibold transition-opacity hover:opacity-60"
+          >
+            Back to top
+            <Image
+              src="/icons/icon-arrow-up.svg"
+              alt=""
+              width={14}
+              height={14}
+              unoptimized
+            />
+          </a>
         </footer>
       </body>
     </html>
