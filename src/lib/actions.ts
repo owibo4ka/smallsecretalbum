@@ -4,6 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createPost, updatePost, deletePost } from "@/lib/posts";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 // Validate exactly what the form is allowed to set.
 const PostSchema = z.object({
@@ -29,6 +30,8 @@ export async function savePost(
   _prevState: PostFormState,
   formData: FormData,
 ): Promise<PostFormState> {
+  await requireAdmin();
+
   const parsed = PostSchema.safeParse({
     title: formData.get("title"),
     content: formData.get("content"),
@@ -60,6 +63,8 @@ export async function savePost(
 }
 
 export async function deletePostAction(formData: FormData) {
+  await requireAdmin();
+
   const id = formData.get("id");
   if (typeof id === "string" && id.length > 0) {
     await deletePost(id);
