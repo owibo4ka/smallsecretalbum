@@ -13,10 +13,25 @@ datasource db {
 }
 
 model Post {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  content       String
+  published     Boolean  @default(false)
+  coverImageUrl String?
+  photos        Photo[]
+  createdAt     DateTime @default(now())
+}
+
+model Photo {
   id        String   @id @default(cuid())
-  title     String
-  slug      String   @unique
-  content   String
-  published Boolean  @default(false)
+  url       String
+  alt       String?
+  caption   String?
+  order     Int      @default(0)
+  // A photo belongs to a post (the per-post gallery). Deleting the post
+  // removes its photo rows too.
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String?
   createdAt DateTime @default(now())
 }
