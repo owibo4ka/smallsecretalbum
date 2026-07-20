@@ -4,11 +4,20 @@ export const metadata = {
 
 export default function Contact() {
   return (
-    <main className="px-5 pt-24 pb-16 md:pt-40">
+    <main className="mx-auto max-w-2xl px-5 pt-24 pb-16 md:pt-40">
       <h1 className="text-2xl font-semibold">contact</h1>
-      <p className="mt-3 max-w-md leading-[1.4] text-ink/70">
-        {/* Placeholder — replace with your real email / Instagram. */}
-        Get in touch for prints, commissions, or just to say hello.
+      <p className="mt-4 leading-[1.6] text-ink/80">
+        For prints, commissions, or just to say hello — reach me on Instagram.
+      </p>
+      <p className="mt-6">
+        <a
+          href="https://www.instagram.com/smallsecretalbum/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold underline transition-opacity hover:opacity-70"
+        >
+          @smallsecretalbum
+        </a>
       </p>
     </main>
   );

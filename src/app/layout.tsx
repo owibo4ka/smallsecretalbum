@@ -48,12 +48,14 @@ export default function RootLayout({
             <Link href="/contact" className="transition-opacity hover:opacity-60">
               contact
             </Link>
-            <Link
-              href="/print-shop"
+            <a
+              href="https://smallsecretalbum.darkroom.com/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="transition-opacity hover:opacity-60"
             >
               print shop
-            </Link>
+            </a>
           </nav>
         </header>
 
