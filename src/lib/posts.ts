@@ -18,6 +18,23 @@ export async function getPostBySlug(slug: string) {
   });
 }
 
+// The previous (older) and next (newer) published posts, for article nav.
+export async function getAdjacentPosts(createdAt: Date) {
+  const [previous, next] = await Promise.all([
+    prisma.post.findFirst({
+      where: { published: true, createdAt: { lt: createdAt } },
+      orderBy: { createdAt: "desc" },
+      select: { slug: true, title: true },
+    }),
+    prisma.post.findFirst({
+      where: { published: true, createdAt: { gt: createdAt } },
+      orderBy: { createdAt: "asc" },
+      select: { slug: true, title: true },
+    }),
+  ]);
+  return { previous, next };
+}
+
 // Admin reads: include drafts too.
 export async function getAllPosts() {
   return prisma.post.findMany({

@@ -1,6 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPostBySlug } from "@/lib/posts";
+import { getPostBySlug, getAdjacentPosts } from "@/lib/posts";
 
 // In Next.js 16, `params` is a Promise that must be awaited. `PageProps` is a
 // global helper type generated from the route path — no import needed.
@@ -12,43 +13,105 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
     notFound();
   }
 
+  const { previous, next } = await getAdjacentPosts(post.createdAt);
+  const date = post.createdAt
+    .toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })
+    .toLowerCase();
+
   return (
-    <main className="mx-auto max-w-2xl px-5 pt-24 pb-16 md:pt-32">
-      {post.coverImageUrl && (
-        <div className="relative mb-8 aspect-[3/2] w-full">
+    <article>
+      {/* Immersive hero: cover image with the title over it. */}
+      {post.coverImageUrl ? (
+        <header className="relative flex min-h-[70vh] items-center justify-center overflow-hidden">
           <Image
             src={post.coverImageUrl}
             alt={post.title}
             fill
             priority
-            sizes="(min-width: 768px) 42rem, 100vw"
-            className="rounded object-cover"
+            sizes="100vw"
+            className="object-cover"
           />
-        </div>
+          <div className="absolute inset-0 bg-black/35" />
+          <div className="relative z-10 flex flex-col items-center gap-4 px-5 text-center text-paper">
+            <p className="text-sm">{date}</p>
+            <h1 className="max-w-3xl text-4xl font-semibold tracking-tight md:text-5xl">
+              {post.title}
+            </h1>
+          </div>
+          <Link
+            href="/journal"
+            className="absolute bottom-6 left-5 z-10 border-b border-paper pb-0.5 text-sm font-semibold text-paper"
+          >
+            ← Back to journal
+          </Link>
+        </header>
+      ) : (
+        <header className="px-5 pt-24 pb-4 md:pt-32">
+          <p className="text-sm text-ink/50">{date}</p>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">
+            {post.title}
+          </h1>
+          <Link
+            href="/journal"
+            className="mt-4 inline-block border-b border-ink pb-0.5 text-sm font-semibold"
+          >
+            ← Back to journal
+          </Link>
+        </header>
       )}
 
-      <h1 className="text-3xl font-semibold tracking-tight">{post.title}</h1>
-      <p className="mt-2 text-ink/50">{post.createdAt.toLocaleDateString()}</p>
+      {/* Reading column: the text, then any gallery photos. */}
+      <div className="mx-auto max-w-[688px] px-5 py-14">
+        <div className="leading-[1.6] whitespace-pre-wrap text-ink/80">
+          {post.content}
+        </div>
 
-      <div className="mt-8 leading-[1.6] whitespace-pre-wrap text-ink/80">
-        {post.content}
-      </div>
-
-      {post.photos.length > 0 && (
-        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {post.photos.map((photo) => (
-            <div key={photo.id} className="relative aspect-square w-full">
+        {post.photos.length > 0 && (
+          <div className="mt-10 space-y-10">
+            {post.photos.map((photo) => (
               <Image
+                key={photo.id}
                 src={photo.url}
                 alt={photo.alt ?? post.title}
-                fill
-                sizes="(min-width: 640px) 21rem, 100vw"
-                className="rounded object-cover"
+                width={1200}
+                height={800}
+                sizes="(min-width: 688px) 688px, 100vw"
+                className="h-auto w-full"
               />
+            ))}
+          </div>
+        )}
+
+        {/* Previous / next post navigation. */}
+        {(previous || next) && (
+          <nav className="mt-16 flex items-start justify-between gap-6 border-t border-ink pt-6">
+            <div className="w-1/2">
+              {previous && (
+                <Link href={`/posts/${previous.slug}`} className="group block">
+                  <span className="text-sm text-ink/60">← Previous</span>
+                  <span className="mt-1 block font-medium group-hover:underline">
+                    {previous.title}
+                  </span>
+                </Link>
+              )}
             </div>
-          ))}
-        </div>
-      )}
-    </main>
+            <div className="w-1/2 text-right">
+              {next && (
+                <Link href={`/posts/${next.slug}`} className="group block">
+                  <span className="text-sm text-ink/60">Next →</span>
+                  <span className="mt-1 block font-medium group-hover:underline">
+                    {next.title}
+                  </span>
+                </Link>
+              )}
+            </div>
+          </nav>
+        )}
+      </div>
+    </article>
   );
 }
