@@ -22,6 +22,8 @@ export default async function EditPostPage(
           title: post.title,
           content: post.content,
           published: post.published,
+          coverImageUrl: post.coverImageUrl,
+          photos: post.photos.map((p) => ({ url: p.url })),
         }}
       />
     </main>

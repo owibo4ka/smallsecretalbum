@@ -43,7 +43,17 @@ export async function savePost(
   }
 
   const id = formData.get("id");
-  const data = { ...parsed.data, slug: slugify(parsed.data.title) };
+  const coverImageUrl = (formData.get("coverImageUrl") as string) || null;
+  const photoUrls = formData
+    .getAll("photoUrls")
+    .filter((v): v is string => typeof v === "string" && v.length > 0);
+
+  const data = {
+    ...parsed.data,
+    slug: slugify(parsed.data.title),
+    coverImageUrl,
+    photoUrls,
+  };
 
   try {
     if (typeof id === "string" && id.length > 0) {
