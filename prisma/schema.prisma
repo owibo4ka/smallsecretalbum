@@ -29,8 +29,10 @@ model Photo {
   alt       String?
   caption   String?
   order     Int      @default(0)
+  // Category for standalone gallery photos (null for post gallery photos).
+  category  String?
   // A photo belongs to a post (the per-post gallery). Deleting the post
-  // removes its photo rows too.
+  // removes its photo rows too. Standalone gallery photos have no post.
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String?
   createdAt DateTime @default(now())
