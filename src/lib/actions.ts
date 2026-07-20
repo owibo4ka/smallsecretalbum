@@ -67,7 +67,7 @@ export async function savePost(
   }
 
   // Refresh the cached pages that show posts, then leave the form.
-  revalidatePath("/");
+  revalidatePath("/journal");
   revalidatePath("/admin/posts");
   redirect("/admin/posts");
 }
@@ -78,7 +78,7 @@ export async function deletePostAction(formData: FormData) {
   const id = formData.get("id");
   if (typeof id === "string" && id.length > 0) {
     await deletePost(id);
-    revalidatePath("/");
+    revalidatePath("/journal");
     revalidatePath("/admin/posts");
   }
 }
