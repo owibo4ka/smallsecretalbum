@@ -39,8 +39,14 @@ export default function RootLayout({
           </div>
 
           <nav className="flex shrink-0 items-center gap-3 font-semibold">
+            <Link href="/journal" className="transition-opacity hover:opacity-60">
+              journal
+            </Link>
             <Link href="/about" className="transition-opacity hover:opacity-60">
               about
+            </Link>
+            <Link href="/contact" className="transition-opacity hover:opacity-60">
+              contact
             </Link>
             <Link
               href="/print-shop"
