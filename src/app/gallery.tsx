@@ -1,15 +1,17 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { CATEGORIES } from "@/lib/categories";
+import { Lightbox } from "@/components/lightbox";
 
 type GalleryPhoto = {
   id: string;
   url: string;
   category: string | null;
   alt: string | null;
+  film: string | null;
 };
 
 export function Gallery({ photos }: { photos: GalleryPhoto[] }) {
@@ -20,44 +22,10 @@ export function Gallery({ photos }: { photos: GalleryPhoto[] }) {
     ? photos.filter((p) => p.category === category)
     : photos;
 
-  const close = useCallback(() => setLightboxIndex(null), []);
-  const next = useCallback(
-    () =>
-      setLightboxIndex((i) =>
-        i === null ? i : (i + 1) % filtered.length,
-      ),
-    [filtered.length],
-  );
-  const prev = useCallback(
-    () =>
-      setLightboxIndex((i) =>
-        i === null ? i : (i - 1 + filtered.length) % filtered.length,
-      ),
-    [filtered.length],
-  );
-
   function selectCategory(slug: string | null) {
     setCategory(slug);
     setLightboxIndex(null);
   }
-
-  // Keyboard nav + scroll lock while the lightbox is open.
-  useEffect(() => {
-    if (lightboxIndex === null) return;
-    document.body.style.overflow = "hidden";
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowRight") next();
-      if (e.key === "ArrowLeft") prev();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [lightboxIndex, close, next, prev]);
-
-  const current = lightboxIndex !== null ? filtered[lightboxIndex] : null;
 
   return (
     <main className="px-5 pt-24 pb-16 md:pt-40">
@@ -87,7 +55,7 @@ export function Gallery({ photos }: { photos: GalleryPhoto[] }) {
         <div className="flex shrink-0 items-center gap-1.5">
           <button
             type="button"
-            onClick={close}
+            onClick={() => setLightboxIndex(null)}
             aria-label="Grid view"
             className={`p-0.5 ${lightboxIndex === null ? "" : "opacity-40"}`}
           >
@@ -138,64 +106,11 @@ export function Gallery({ photos }: { photos: GalleryPhoto[] }) {
         </div>
       )}
 
-      {/* Fullscreen lightbox */}
-      {current && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-[#1a1a1a]">
-          <div className="flex justify-end p-4">
-            <button
-              type="button"
-              onClick={close}
-              aria-label="Close"
-              className="text-2xl leading-none text-paper"
-            >
-              ✕
-            </button>
-          </div>
-
-          <div className="flex min-h-0 flex-1 items-center justify-center gap-3 px-4 sm:gap-6">
-            <button
-              type="button"
-              onClick={prev}
-              aria-label="Previous"
-              className="text-4xl leading-none text-paper/70 hover:text-paper"
-            >
-              ‹
-            </button>
-            <img
-              src={current.url}
-              alt={current.alt ?? "Photograph by Olha Rykhliuk"}
-              className="max-h-full max-w-full object-contain"
-            />
-            <button
-              type="button"
-              onClick={next}
-              aria-label="Next"
-              className="text-4xl leading-none text-paper/70 hover:text-paper"
-            >
-              ›
-            </button>
-          </div>
-
-          <div className="flex gap-2 overflow-x-auto p-4">
-            {filtered.map((photo, i) => (
-              <button
-                key={photo.id}
-                type="button"
-                onClick={() => setLightboxIndex(i)}
-                className={`h-16 w-24 shrink-0 ${
-                  i === lightboxIndex ? "" : "opacity-50 hover:opacity-80"
-                }`}
-              >
-                <img
-                  src={photo.url}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      <Lightbox
+        photos={filtered}
+        index={lightboxIndex}
+        onIndexChange={setLightboxIndex}
+      />
     </main>
   );
 }

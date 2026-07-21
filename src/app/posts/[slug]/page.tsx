@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPostBySlug, getAdjacentPosts } from "@/lib/posts";
+import { Markdown } from "@/components/markdown";
+import { PostGallery } from "@/components/post-gallery";
 
 // In Next.js 16, `params` is a Promise that must be awaited. `PageProps` is a
 // global helper type generated from the route path — no import needed.
@@ -66,25 +68,15 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
 
       {/* Reading column: the text, then any gallery photos. */}
       <div className="mx-auto max-w-[688px] px-5 py-14">
-        <div className="leading-[1.6] whitespace-pre-wrap text-ink/80">
-          {post.content}
-        </div>
+        <Markdown>{post.content}</Markdown>
 
-        {post.photos.length > 0 && (
-          <div className="mt-10 space-y-10">
-            {post.photos.map((photo) => (
-              <Image
-                key={photo.id}
-                src={photo.url}
-                alt={photo.alt ?? post.title}
-                width={1200}
-                height={800}
-                sizes="(min-width: 688px) 688px, 100vw"
-                className="h-auto w-full"
-              />
-            ))}
-          </div>
-        )}
+        <PostGallery
+          photos={post.photos.map((p) => ({
+            id: p.id,
+            url: p.url,
+            alt: p.alt,
+          }))}
+        />
 
         {/* Previous / next post navigation. */}
         {(previous || next) && (

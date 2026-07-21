@@ -23,6 +23,28 @@ model Post {
   createdAt     DateTime @default(now())
 }
 
+// The editable "about" page. A single row (id is always "about"); the body is
+// plain text where blank lines separate paragraphs.
+model AboutPage {
+  id          String   @id @default("about")
+  body        String
+  portraitUrl String?
+  email       String?
+  updatedAt   DateTime @updatedAt
+}
+
+// A message sent through the contact form on the about page. Kept in an admin
+// inbox so Olha's email address never appears on the public site.
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
 model Photo {
   id        String   @id @default(cuid())
   url       String
@@ -31,6 +53,10 @@ model Photo {
   order     Int      @default(0)
   // Category for standalone gallery photos (null for post gallery photos).
   category  String?
+  // When true, this gallery photo appears in the home hero carousel.
+  featured  Boolean  @default(false)
+  // Optional film stock the photo was shot on (e.g. "Kodak Portra 400").
+  film      String?
   // A photo belongs to a post (the per-post gallery). Deleting the post
   // removes its photo rows too. Standalone gallery photos have no post.
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)

@@ -1,11 +1,14 @@
-import { getGalleryPhotos } from "@/lib/gallery";
-import { Gallery } from "./gallery";
+import { getFeaturedPhotos, getGalleryPhotos } from "@/lib/gallery";
+import { HomeHero } from "./home-hero";
 
 export default async function Home() {
-  const photos = await getGalleryPhotos();
+  // Prefer the photos flagged "featured"; before any are starred, fall back to
+  // the whole gallery so the home screen is never empty.
+  const featured = await getFeaturedPhotos();
+  const photos = featured.length > 0 ? featured : await getGalleryPhotos();
 
   return (
-    <Gallery
+    <HomeHero
       photos={photos.map((p) => ({
         id: p.id,
         url: p.url,

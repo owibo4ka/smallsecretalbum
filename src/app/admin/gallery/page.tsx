@@ -3,6 +3,8 @@ import { getGalleryPhotos } from "@/lib/gallery";
 import { deleteGalleryPhotoAction } from "@/lib/gallery-actions";
 import { GalleryUploader } from "./gallery-uploader";
 import { CategorySelect } from "./category-select";
+import { FeaturedToggle } from "./featured-toggle";
+import { FilmInput } from "./film-input";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +52,13 @@ export default async function AdminGalleryPage() {
                     </button>
                   </form>
                 </div>
+                <div className="text-[13px]">
+                  <FeaturedToggle
+                    photoId={photo.id}
+                    featured={photo.featured}
+                  />
+                </div>
+                <FilmInput photoId={photo.id} current={photo.film} />
               </li>
             ))}
           </ul>

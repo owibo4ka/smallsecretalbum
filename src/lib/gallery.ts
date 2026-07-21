@@ -21,11 +21,27 @@ export async function createGalleryPhoto(data: {
   return prisma.photo.create({ data: { ...data, postId: null } });
 }
 
+// Photos flagged to appear in the home hero carousel, in display order.
+export async function getFeaturedPhotos() {
+  return prisma.photo.findMany({
+    where: { postId: null, featured: true },
+    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+  });
+}
+
+export async function setGalleryPhotoFeatured(id: string, featured: boolean) {
+  return prisma.photo.update({ where: { id }, data: { featured } });
+}
+
 export async function updateGalleryPhotoCategory(
   id: string,
   category: string | null,
 ) {
   return prisma.photo.update({ where: { id }, data: { category } });
+}
+
+export async function updateGalleryPhotoFilm(id: string, film: string | null) {
+  return prisma.photo.update({ where: { id }, data: { film } });
 }
 
 export async function deleteGalleryPhoto(id: string) {

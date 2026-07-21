@@ -30,6 +30,20 @@ export function AdminBar({ email }: { email: string }) {
         >
           Gallery
         </Link>
+        <Link
+          href="/admin/about"
+          prefetch={false}
+          className="font-semibold hover:text-ink"
+        >
+          About
+        </Link>
+        <Link
+          href="/admin/messages"
+          prefetch={false}
+          className="font-semibold hover:text-ink"
+        >
+          Messages
+        </Link>
       </nav>
       <div className="flex items-center gap-4">
         <span className="hidden sm:inline">Signed in as {email}</span>

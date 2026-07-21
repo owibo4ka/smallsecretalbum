@@ -5,7 +5,9 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import {
   createGalleryPhoto,
   deleteGalleryPhoto,
+  setGalleryPhotoFeatured,
   updateGalleryPhotoCategory,
+  updateGalleryPhotoFilm,
 } from "@/lib/gallery";
 
 export async function addGalleryPhotosAction(
@@ -29,6 +31,7 @@ export async function addGalleryPhotosAction(
   }
 
   revalidatePath("/");
+  revalidatePath("/works");
   revalidatePath("/admin/gallery");
 
   // A changing value tells the client the add succeeded (so it can reset).
@@ -43,6 +46,33 @@ export async function updateGalleryPhotoCategoryAction(formData: FormData) {
   if (typeof id === "string" && id.length > 0) {
     await updateGalleryPhotoCategory(id, category);
     revalidatePath("/");
+    revalidatePath("/works");
+    revalidatePath("/admin/gallery");
+  }
+}
+
+export async function updateGalleryPhotoFilmAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = formData.get("id");
+  const film = ((formData.get("film") as string) ?? "").trim() || null;
+  if (typeof id === "string" && id.length > 0) {
+    await updateGalleryPhotoFilm(id, film);
+    revalidatePath("/");
+    revalidatePath("/works");
+    revalidatePath("/admin/gallery");
+  }
+}
+
+export async function toggleGalleryPhotoFeaturedAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = formData.get("id");
+  const featured = formData.get("featured") === "true";
+  if (typeof id === "string" && id.length > 0) {
+    await setGalleryPhotoFeatured(id, featured);
+    revalidatePath("/");
+    revalidatePath("/works");
     revalidatePath("/admin/gallery");
   }
 }
@@ -54,6 +84,7 @@ export async function deleteGalleryPhotoAction(formData: FormData) {
   if (typeof id === "string" && id.length > 0) {
     await deleteGalleryPhoto(id);
     revalidatePath("/");
+    revalidatePath("/works");
     revalidatePath("/admin/gallery");
   }
 }

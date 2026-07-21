@@ -21,7 +21,7 @@ export default async function JournalPage() {
         <div className="mt-10 grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
             <Link key={post.id} href={`/posts/${post.slug}`} className="group">
-              <div className="relative aspect-[3/4] w-full overflow-hidden bg-ink/5">
+              <div className="relative aspect-[3/2] w-full overflow-hidden bg-ink/5">
                 {post.coverImageUrl && (
                   <Image
                     src={post.coverImageUrl}

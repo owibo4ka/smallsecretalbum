@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import Image from "next/image";
 import { savePost, type PostFormState } from "@/lib/actions";
 import { uploadImage } from "@/lib/upload-client";
+import { Markdown } from "@/components/markdown";
 
 type PostFormProps = {
   post?: {
@@ -25,6 +26,9 @@ export function PostForm({ post }: PostFormProps) {
     undefined,
   );
 
+  const [content, setContent] = useState(post?.content ?? "");
+  const [preview, setPreview] = useState(false);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
   const [cover, setCover] = useState<string | null>(post?.coverImageUrl ?? null);
   const [photos, setPhotos] = useState<string[]>(
     post?.photos.map((p) => p.url) ?? [],
@@ -41,6 +45,36 @@ export function PostForm({ post }: PostFormProps) {
       setCover(await uploadImage(file));
     } catch {
       setUploadError("Cover upload failed. Try again.");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  }
+
+  // Uploads a photo and drops a Markdown image at the cursor, so it renders
+  // inline within the text (not in the gallery at the end of the post).
+  async function handleInsertPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const url = await uploadImage(file);
+      const snippet = `\n\n![](${url})\n\n`;
+      const el = contentRef.current;
+      const at = el ? el.selectionStart : content.length;
+      const nextValue = content.slice(0, at) + snippet + content.slice(at);
+      setContent(nextValue);
+      setPreview(false);
+      // Put the cursor after the inserted image once React re-renders.
+      requestAnimationFrame(() => {
+        if (!el) return;
+        const pos = at + snippet.length;
+        el.focus();
+        el.setSelectionRange(pos, pos);
+      });
+    } catch {
+      setUploadError("Photo upload failed. Try again.");
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -80,16 +114,70 @@ export function PostForm({ post }: PostFormProps) {
       </div>
 
       <div>
-        <label htmlFor="content" className="block font-semibold">
-          Content
-        </label>
+        <div className="flex items-center justify-between">
+          <label htmlFor="content" className="font-semibold">
+            Content
+          </label>
+          <div className="flex items-center gap-3 text-[13px]">
+            <label className="cursor-pointer font-semibold text-ink/60 hover:text-ink">
+              + Insert photo
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleInsertPhoto}
+                className="hidden"
+              />
+            </label>
+            <span className="text-ink/20">|</span>
+            <button
+              type="button"
+              onClick={() => setPreview(false)}
+              className={preview ? "text-ink/40 hover:text-ink" : "font-semibold"}
+            >
+              Write
+            </button>
+            <button
+              type="button"
+              onClick={() => setPreview(true)}
+              className={preview ? "font-semibold" : "text-ink/40 hover:text-ink"}
+            >
+              Preview
+            </button>
+          </div>
+        </div>
+
+        {/* The textarea always stays mounted so its value submits; Preview just
+            hides it and shows the rendered Markdown. */}
         <textarea
           id="content"
           name="content"
+          ref={contentRef}
           rows={10}
-          defaultValue={post?.content}
-          className={inputClass}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className={`${inputClass} ${preview ? "hidden" : ""}`}
         />
+        {preview && (
+          <div className="mt-1 min-h-[6rem] rounded border border-ink/20 px-3 py-3">
+            {content.trim() ? (
+              <Markdown>{content}</Markdown>
+            ) : (
+              <p className="text-[14px] text-ink/40">Nothing to preview yet.</p>
+            )}
+          </div>
+        )}
+
+        <p className="mt-1 text-[13px] text-ink/50">
+          Formatting:{" "}
+          <code className="rounded bg-ink/[0.06] px-1">**bold**</code>{" "}
+          <code className="rounded bg-ink/[0.06] px-1">*italic*</code>{" "}
+          <code className="rounded bg-ink/[0.06] px-1">## Heading</code>{" "}
+          <code className="rounded bg-ink/[0.06] px-1">- list item</code>{" "}
+          <code className="rounded bg-ink/[0.06] px-1">[link](https://…)</code>{" "}
+          <code className="rounded bg-ink/[0.06] px-1">![alt](image-url)</code>.
+          Use “+ Insert photo” to place an image at your cursor. Leave a blank
+          line between paragraphs.
+        </p>
       </div>
 
       {/* Cover image */}
