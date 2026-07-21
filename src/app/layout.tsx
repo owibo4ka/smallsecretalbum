@@ -65,19 +65,27 @@ export default function RootLayout({
           <p className="leading-[1.3]">
             © smallsecretalbum, {new Date().getFullYear()}
           </p>
-          <a
-            href="#top"
-            className="flex items-center gap-0.5 font-semibold transition-opacity hover:opacity-60"
-          >
-            Back to top
-            <Image
-              src="/icons/icon-arrow-up.svg"
-              alt=""
-              width={14}
-              height={14}
-              unoptimized
-            />
-          </a>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/admin/posts"
+              className="text-ink/40 transition-colors hover:text-ink"
+            >
+              admin
+            </Link>
+            <a
+              href="#top"
+              className="flex items-center gap-0.5 font-semibold transition-opacity hover:opacity-60"
+            >
+              Back to top
+              <Image
+                src="/icons/icon-arrow-up.svg"
+                alt=""
+                width={14}
+                height={14}
+                unoptimized
+              />
+            </a>
+          </div>
         </footer>
       </body>
     </html>
