@@ -1,6 +1,7 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/server";
+import { isAdminEmail } from "@/lib/auth/admins";
 
 // The browser uploads photos directly to Vercel Blob. Before it can, it asks
 // this route for a token. We only issue one to the signed-in admin.
@@ -13,7 +14,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       request,
       onBeforeGenerateToken: async () => {
         const { data: session } = await auth.getSession();
-        if (!session?.user || session.user.email !== process.env.ADMIN_EMAIL) {
+        if (!session?.user || !isAdminEmail(session.user.email)) {
           throw new Error("Not authorized to upload.");
         }
         return {

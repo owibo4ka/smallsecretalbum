@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/server";
+import { isAdminEmail } from "@/lib/auth/admins";
 
 // The single auth gate for admin pages and mutations. Unauthenticated users go
 // to sign-in; authenticated non-admins go home. Returns the admin user so
@@ -12,7 +13,7 @@ export async function requireAdmin() {
   if (!session?.user) {
     redirect("/auth/sign-in");
   }
-  if (session.user.email !== process.env.ADMIN_EMAIL) {
+  if (!isAdminEmail(session.user.email)) {
     redirect("/");
   }
 
