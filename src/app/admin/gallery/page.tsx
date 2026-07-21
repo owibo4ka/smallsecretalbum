@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { getGalleryPhotos } from "@/lib/gallery";
 import { deleteGalleryPhotoAction } from "@/lib/gallery-actions";
-import { categoryLabel } from "@/lib/categories";
 import { GalleryUploader } from "./gallery-uploader";
+import { CategorySelect } from "./category-select";
 
 export const dynamic = "force-dynamic";
 
@@ -38,10 +38,8 @@ export default async function AdminGalleryPage() {
                     className="object-cover"
                   />
                 </div>
-                <div className="flex items-center justify-between text-[13px]">
-                  <span className="text-ink/60">
-                    {categoryLabel(photo.category) ?? "—"}
-                  </span>
+                <div className="flex items-center justify-between gap-2 text-[13px]">
+                  <CategorySelect photoId={photo.id} current={photo.category} />
                   <form action={deleteGalleryPhotoAction}>
                     <input type="hidden" name="id" value={photo.id} />
                     <button

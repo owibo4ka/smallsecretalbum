@@ -21,6 +21,13 @@ export async function createGalleryPhoto(data: {
   return prisma.photo.create({ data: { ...data, postId: null } });
 }
 
+export async function updateGalleryPhotoCategory(
+  id: string,
+  category: string | null,
+) {
+  return prisma.photo.update({ where: { id }, data: { category } });
+}
+
 export async function deleteGalleryPhoto(id: string) {
   return prisma.photo.delete({ where: { id } });
 }
