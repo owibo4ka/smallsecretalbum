@@ -12,7 +12,7 @@ const urbanist = Urbanist({
 
 export const metadata: Metadata = {
   title: "smallsecretalbum",
-  description: "Street scenes and small secrets. Photography by Bara Bolka.",
+  description: "Street scenes and small secrets. Photography by Olha Rykhliuk.",
 };
 
 export default function RootLayout({
@@ -34,7 +34,7 @@ export default function RootLayout({
             <span className="h-4 w-px shrink-0 bg-ink" aria-hidden="true" />
             <p className="leading-[1.3] text-ink/90">
               Street scenes and small secrets. Photography by{" "}
-              <span className="font-semibold">Bara Bolka.</span>
+              <span className="font-semibold">Olha Rykhliuk.</span>
             </p>
           </div>
 

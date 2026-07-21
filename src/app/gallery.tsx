@@ -129,7 +129,7 @@ export function Gallery({ photos }: { photos: GalleryPhoto[] }) {
             >
               <img
                 src={photo.url}
-                alt={photo.alt ?? "Photograph by Bara Bolka"}
+                alt={photo.alt ?? "Photograph by Olha Rykhliuk"}
                 loading="lazy"
                 className="w-full"
               />
@@ -163,7 +163,7 @@ export function Gallery({ photos }: { photos: GalleryPhoto[] }) {
             </button>
             <img
               src={current.url}
-              alt={current.alt ?? "Photograph by Bara Bolka"}
+              alt={current.alt ?? "Photograph by Olha Rykhliuk"}
               className="max-h-full max-w-full object-contain"
             />
             <button
