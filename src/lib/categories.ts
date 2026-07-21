@@ -1,8 +1,8 @@
 // The fixed gallery categories from the design. "All" is just the unfiltered
 // view, so it's not stored here.
 export const CATEGORIES = [
-  { slug: "street-life", label: "Street Life" },
   { slug: "wandering", label: "Wandering" },
+  { slug: "street-life", label: "Street Life" },
   { slug: "film-experiments", label: "Film Experiments" },
   { slug: "people-moments", label: "People / Moments" },
 ] as const;
