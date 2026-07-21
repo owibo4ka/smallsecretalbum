@@ -1,15 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
 import { addGalleryPhotosAction } from "@/lib/gallery-actions";
 import { uploadImage } from "@/lib/upload-client";
 import { CATEGORIES } from "@/lib/categories";
 
 export function GalleryUploader() {
+  const [state, formAction, pending] = useActionState(
+    addGalleryPhotosAction,
+    null,
+  );
   const [urls, setUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Clear the previews once an add succeeds, so the same batch can't be
+  // submitted twice.
+  useEffect(() => {
+    if (state) setUrls([]);
+  }, [state]);
 
   async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -28,7 +38,7 @@ export function GalleryUploader() {
   }
 
   return (
-    <form action={addGalleryPhotosAction} className="space-y-4">
+    <form action={formAction} className="space-y-4">
       <div>
         <label htmlFor="category" className="block font-semibold">
           Category
@@ -85,10 +95,10 @@ export function GalleryUploader() {
 
       <button
         type="submit"
-        disabled={uploading || urls.length === 0}
+        disabled={uploading || pending || urls.length === 0}
         className="rounded bg-ink px-4 py-2 font-semibold text-paper disabled:opacity-50"
       >
-        Add to gallery
+        {pending ? "Adding…" : "Add to gallery"}
       </button>
     </form>
   );

@@ -8,13 +8,21 @@ import {
   updateGalleryPhotoCategory,
 } from "@/lib/gallery";
 
-export async function addGalleryPhotosAction(formData: FormData) {
+export async function addGalleryPhotosAction(
+  _prevState: unknown,
+  formData: FormData,
+) {
   await requireAdmin();
 
   const category = (formData.get("category") as string) || null;
-  const urls = formData
-    .getAll("photoUrls")
-    .filter((v): v is string => typeof v === "string" && v.length > 0);
+  // Dedupe within the batch so an accidental double-add can't create copies.
+  const urls = [
+    ...new Set(
+      formData
+        .getAll("photoUrls")
+        .filter((v): v is string => typeof v === "string" && v.length > 0),
+    ),
+  ];
 
   for (const url of urls) {
     await createGalleryPhoto({ url, category });
@@ -22,6 +30,9 @@ export async function addGalleryPhotosAction(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/gallery");
+
+  // A changing value tells the client the add succeeded (so it can reset).
+  return { addedAt: Date.now() };
 }
 
 export async function updateGalleryPhotoCategoryAction(formData: FormData) {
