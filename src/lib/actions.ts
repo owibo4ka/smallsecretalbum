@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createPost, updatePost, deletePost } from "@/lib/posts";
+import { createPost, updatePost, deletePost, setPostFeatured } from "@/lib/posts";
 import { requireAdmin } from "@/lib/auth/require-admin";
 
 // Validate exactly what the form is allowed to set.
@@ -70,6 +70,18 @@ export async function savePost(
   revalidatePath("/journal");
   revalidatePath("/admin/posts");
   redirect("/admin/posts");
+}
+
+export async function togglePostFeaturedAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = formData.get("id");
+  const featured = formData.get("featured") === "true";
+  if (typeof id === "string" && id.length > 0) {
+    await setPostFeatured(id, featured);
+    revalidatePath("/");
+    revalidatePath("/admin/posts");
+  }
 }
 
 export async function deletePostAction(formData: FormData) {

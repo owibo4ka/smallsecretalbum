@@ -6,33 +6,44 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { categoryLabel } from "@/lib/categories";
 
-export type HeroPhoto = {
-  id: string;
-  url: string;
-  category: string | null;
-  alt: string | null;
-};
+// A hero slide is either a standalone photo (shows the site tagline) or a
+// featured blog post (shows its cover, its title, and links to the post).
+export type HeroItem =
+  | {
+      kind: "photo";
+      id: string;
+      url: string;
+      category: string | null;
+      alt: string | null;
+    }
+  | {
+      kind: "post";
+      id: string;
+      url: string;
+      title: string;
+      slug: string;
+    };
 
 const ROTATE_MS = 6000;
 
-// The full-viewport home screen: a background photo that auto-rotates through
-// the featured photos, a thumbnail strip to jump between them, the site title,
-// and the active photo's category label. Matches the Figma home design across
-// desktop / tablet / phone.
-export function HomeHero({ photos }: { photos: HeroPhoto[] }) {
+// The full-viewport home screen: a background image that auto-rotates through
+// the featured items, a thumbnail strip to jump between them, the site header,
+// and — per slide — either the tagline (photo) or the post's title + link
+// (featured post). Matches the Figma home design across desktop/tablet/phone.
+export function HomeHero({ items }: { items: HeroItem[] }) {
   const [active, setActive] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Auto-advance through the featured photos.
+  // Auto-advance through the featured items.
   useEffect(() => {
-    if (photos.length <= 1) return;
+    if (items.length <= 1) return;
     const id = setInterval(() => {
-      setActive((a) => (a + 1) % photos.length);
+      setActive((a) => (a + 1) % items.length);
     }, ROTATE_MS);
     return () => clearInterval(id);
-  }, [photos.length]);
+  }, [items.length]);
 
-  if (photos.length === 0) {
+  if (items.length === 0) {
     return (
       <section className="flex h-dvh items-center justify-center bg-ink p-6 text-center text-paper">
         <p className="max-w-md text-[20px] leading-snug">
@@ -46,8 +57,8 @@ export function HomeHero({ photos }: { photos: HeroPhoto[] }) {
     );
   }
 
-  const current = photos[active];
-  const label = categoryLabel(current.category);
+  const current = items[active];
+  const label = current.kind === "photo" ? categoryLabel(current.category) : null;
 
   const navLinks = (
     <>
@@ -68,12 +79,18 @@ export function HomeHero({ photos }: { photos: HeroPhoto[] }) {
 
   return (
     <section className="relative h-dvh w-full overflow-hidden bg-ink text-paper">
-      {/* Background photos, crossfading between the active one and the rest. */}
-      {photos.map((photo, i) => (
+      {/* Background images, crossfading between the active one and the rest. */}
+      {items.map((item, i) => (
         <img
-          key={photo.id}
-          src={photo.url}
-          alt={i === active ? photo.alt ?? "Photograph by Olha Rykhliuk" : ""}
+          key={item.id}
+          src={item.url}
+          alt={
+            i === active
+              ? item.kind === "post"
+                ? item.title
+                : item.alt ?? "Photograph by Olha Rykhliuk"
+              : ""
+          }
           aria-hidden={i !== active}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
             i === active ? "opacity-100" : "opacity-0"
@@ -115,32 +132,47 @@ export function HomeHero({ photos }: { photos: HeroPhoto[] }) {
         </nav>
       )}
 
-      {/* Title, vertically centered. */}
+      {/* Caption, vertically centered: tagline for a photo, title + link for a
+          featured post. */}
       <div className="absolute inset-0 z-10 flex items-center px-3 md:px-5">
-        <h1 className="max-w-[692px] text-[36px] leading-[1.05] tracking-tight md:text-[44px] lg:text-[48px]">
-          Street scenes and small secrets. Photography by{" "}
-          <span className="font-semibold">Olha Rykhliuk.</span>
-        </h1>
+        {current.kind === "post" ? (
+          <div className="max-w-[692px]">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-paper/80 md:text-[12px]">
+              From the journal
+            </p>
+            <Link href={`/posts/${current.slug}`} className="group inline-block">
+              <h1 className="text-[36px] font-semibold leading-[1.05] tracking-tight md:text-[44px] lg:text-[48px]">
+                {current.title}
+              </h1>
+              <span className="mt-3 inline-block border-b border-paper/70 pb-0.5 text-sm font-semibold transition-colors group-hover:border-paper">
+                Read the story →
+              </span>
+            </Link>
+          </div>
+        ) : (
+          <h1 className="max-w-[692px] text-[36px] leading-[1.05] tracking-tight md:text-[44px] lg:text-[48px]">
+            Street scenes and small secrets. Photography by{" "}
+            <span className="font-semibold">Olha Rykhliuk.</span>
+          </h1>
+        )}
       </div>
 
-      {/* Bottom row: thumbnail strip (left) + category label (right). */}
+      {/* Bottom row: thumbnail strip (left) + slide label (right). */}
       <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-3 px-3 py-3 md:px-5 md:py-5">
         <div className="flex w-[86px] flex-col gap-2.5 md:w-[400px] md:flex-row md:items-end md:gap-4 lg:w-[549px]">
-          {photos.map((photo, i) => (
+          {items.map((item, i) => (
             <button
-              key={photo.id}
+              key={item.id}
               type="button"
               onClick={() => setActive(i)}
-              aria-label={`Show photo ${i + 1}`}
+              aria-label={`Show slide ${i + 1}`}
               aria-current={i === active}
               className={`relative aspect-[3/2] w-full overflow-hidden transition-opacity md:min-w-0 md:flex-1 ${
-                i === active
-                  ? "opacity-60"
-                  : "opacity-100 hover:opacity-80"
+                i === active ? "opacity-60" : "opacity-100 hover:opacity-80"
               }`}
             >
               <img
-                src={photo.url}
+                src={item.url}
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover"
               />
@@ -152,8 +184,10 @@ export function HomeHero({ photos }: { photos: HeroPhoto[] }) {
           <p className="text-[11px] tracking-wide text-paper/70 md:text-[12px]">
             ✦ work in progress — new corners still being swept
           </p>
-          {label && (
-            <p className="font-semibold tracking-tight">{label}</p>
+          {current.kind === "post" ? (
+            <p className="font-semibold tracking-tight">journal</p>
+          ) : (
+            label && <p className="font-semibold tracking-tight">{label}</p>
           )}
         </div>
       </div>

@@ -19,6 +19,9 @@ model Post {
   content       String
   published     Boolean  @default(false)
   coverImageUrl String?
+  // When true, this post appears as a slide in the home hero (cover image +
+  // title linking to the post).
+  featured      Boolean  @default(false)
   photos        Photo[]
   createdAt     DateTime @default(now())
 }

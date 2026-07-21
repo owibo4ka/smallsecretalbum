@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAllPosts } from "@/lib/posts";
 import { deletePostAction } from "@/lib/actions";
+import { PostFeaturedToggle } from "./post-featured-toggle";
 
 export default async function AdminPostsPage() {
   const posts = await getAllPosts();
@@ -35,6 +36,14 @@ export default async function AdminPostsPage() {
                 )}
               </div>
               <div className="flex items-center gap-3 text-sm">
+                {/* Featuring puts the post in the home hero, which needs a
+                    cover image — so only offer it once the post is publishable. */}
+                {post.published && post.coverImageUrl && (
+                  <PostFeaturedToggle
+                    postId={post.id}
+                    featured={post.featured}
+                  />
+                )}
                 <Link
                   href={`/admin/posts/${post.id}/edit`}
                   className="hover:underline"

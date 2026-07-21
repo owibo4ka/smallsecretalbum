@@ -18,6 +18,19 @@ export async function getPostBySlug(slug: string) {
   });
 }
 
+// Published posts flagged to appear as slides in the home hero, newest first.
+export async function getFeaturedPosts() {
+  return prisma.post.findMany({
+    where: { published: true, featured: true },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, slug: true, title: true, coverImageUrl: true },
+  });
+}
+
+export async function setPostFeatured(id: string, featured: boolean) {
+  return prisma.post.update({ where: { id }, data: { featured } });
+}
+
 // The previous (older) and next (newer) published posts, for article nav.
 export async function getAdjacentPosts(createdAt: Date) {
   const [previous, next] = await Promise.all([
