@@ -68,6 +68,7 @@ export default function RootLayout({
           <div className="flex items-center gap-4">
             <Link
               href="/admin/posts"
+              prefetch={false}
               className="text-ink/40 transition-colors hover:text-ink"
             >
               admin

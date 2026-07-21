@@ -16,10 +16,18 @@ export function AdminBar({ email }: { email: string }) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-ink/10 px-5 py-2 text-ink/60">
       <nav className="flex items-center gap-4">
-        <Link href="/admin/posts" className="font-semibold hover:text-ink">
+        <Link
+          href="/admin/posts"
+          prefetch={false}
+          className="font-semibold hover:text-ink"
+        >
           Posts
         </Link>
-        <Link href="/admin/gallery" className="font-semibold hover:text-ink">
+        <Link
+          href="/admin/gallery"
+          prefetch={false}
+          className="font-semibold hover:text-ink"
+        >
           Gallery
         </Link>
       </nav>
