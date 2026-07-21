@@ -2,6 +2,9 @@ import { getFeaturedPhotos, getGalleryPhotos } from "@/lib/gallery";
 import { getFeaturedPosts } from "@/lib/posts";
 import { HomeHero, type HeroItem } from "./home-hero";
 
+// Always render from the current database so featured photos/posts show up right away.
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const [featuredPhotos, featuredPosts] = await Promise.all([
     getFeaturedPhotos(),

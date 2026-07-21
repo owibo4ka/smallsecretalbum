@@ -8,6 +8,9 @@ export const metadata = {
   title: "About — smallsecretalbum",
 };
 
+// Always render from the current database so edits show up right away.
+export const dynamic = "force-dynamic";
+
 // The bio, portrait, and contact form are editable from /admin/about. The bio
 // supports Markdown (bold, headings, lists, links).
 export default async function About() {

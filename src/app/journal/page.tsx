@@ -6,6 +6,9 @@ export const metadata = {
   title: "Journal — smallsecretalbum",
 };
 
+// Always render from the current database so new/edited posts show up right away.
+export const dynamic = "force-dynamic";
+
 export default async function JournalPage() {
   const posts = await getPublishedPosts();
 

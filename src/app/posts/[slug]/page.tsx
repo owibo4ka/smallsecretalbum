@@ -5,6 +5,9 @@ import { getPostBySlug, getAdjacentPosts } from "@/lib/posts";
 import { Markdown } from "@/components/markdown";
 import { PostGallery } from "@/components/post-gallery";
 
+// Always render from the current database so post edits show up right away.
+export const dynamic = "force-dynamic";
+
 // In Next.js 16, `params` is a Promise that must be awaited. `PageProps` is a
 // global helper type generated from the route path — no import needed.
 export default async function PostPage(props: PageProps<"/posts/[slug]">) {
