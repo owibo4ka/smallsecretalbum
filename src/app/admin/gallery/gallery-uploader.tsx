@@ -18,6 +18,7 @@ export function GalleryUploader() {
   // Clear the previews once an add succeeds, so the same batch can't be
   // submitted twice.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (state) setUrls([]);
   }, [state]);
 
