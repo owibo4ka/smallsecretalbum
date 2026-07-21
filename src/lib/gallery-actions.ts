@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import {
   createGalleryPhoto,
   deleteGalleryPhoto,
+  reorderGalleryPhotos,
   setGalleryPhotoFeatured,
   updateGalleryPhotoCategory,
   updateGalleryPhotoFilm,
@@ -75,6 +76,24 @@ export async function toggleGalleryPhotoFeaturedAction(formData: FormData) {
     revalidatePath("/works");
     revalidatePath("/admin/gallery");
   }
+}
+
+export async function reorderGalleryPhotosAction(ids: string[]) {
+  await requireAdmin();
+
+  // Only accept a clean list of non-empty strings.
+  if (
+    !Array.isArray(ids) ||
+    ids.length === 0 ||
+    ids.some((id) => typeof id !== "string" || id.length === 0)
+  ) {
+    return;
+  }
+
+  await reorderGalleryPhotos(ids);
+  revalidatePath("/");
+  revalidatePath("/works");
+  revalidatePath("/admin/gallery");
 }
 
 export async function deleteGalleryPhotoAction(formData: FormData) {

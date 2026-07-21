@@ -20,6 +20,18 @@ type PostFormProps = {
 const inputClass =
   "w-full rounded border border-ink/20 bg-transparent px-3 py-2 text-[14px]";
 
+// Pull the image URLs out of Markdown (`![alt](url)`) in the order they appear,
+// so the editor can preview the photos inlined in the text.
+function extractInlineImages(markdown: string): string[] {
+  const urls: string[] = [];
+  const re = /!\[[^\]]*\]\(\s*([^)\s]+)/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(markdown)) !== null) {
+    urls.push(match[1]);
+  }
+  return urls;
+}
+
 export function PostForm({ post }: PostFormProps) {
   const [state, formAction, pending] = useActionState<PostFormState, FormData>(
     savePost,
@@ -35,6 +47,21 @@ export function PostForm({ post }: PostFormProps) {
   );
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // The photos placed inside the article text, kept in sync as you type.
+  const inlineImages = extractInlineImages(content);
+
+  // Swap a gallery photo with its neighbour. Submission order (the hidden
+  // photoUrls fields) is the stored order, so this reorders the live post.
+  function moveGalleryPhoto(index: number, direction: -1 | 1) {
+    const target = index + direction;
+    if (target < 0 || target >= photos.length) return;
+    setPhotos((prev) => {
+      const next = [...prev];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+  }
 
   async function handleCover(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -210,6 +237,34 @@ export function PostForm({ post }: PostFormProps) {
         />
       </div>
 
+      {/* Inline photos — a read-only preview of the images placed in the text.
+          Managed by editing the content (Insert photo / the Markdown), not here. */}
+      {inlineImages.length > 0 && (
+        <div>
+          <span className="block font-semibold">Inline photos (in the text)</span>
+          <p className="mt-0.5 text-[13px] text-ink/50">
+            These sit inside your article where you inserted them. To move or
+            remove one, edit the content above.
+          </p>
+          <ul className="mt-2 flex flex-wrap gap-3">
+            {inlineImages.map((url, i) => (
+              <li key={`${url}-${i}`} className="relative">
+                <Image
+                  src={url}
+                  alt={`Inline photo ${i + 1}`}
+                  width={112}
+                  height={112}
+                  className="size-28 rounded object-cover"
+                />
+                <span className="absolute bottom-1 left-1 rounded bg-ink/80 px-1 text-[11px] text-paper">
+                  {i + 1}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Gallery */}
       <div>
         <span className="block font-semibold">Gallery photos</span>
@@ -231,10 +286,32 @@ export function PostForm({ post }: PostFormProps) {
                   onClick={() =>
                     setPhotos((prev) => prev.filter((u) => u !== url))
                   }
+                  aria-label="Remove photo"
                   className="absolute top-1 right-1 rounded bg-ink/80 px-1 text-[12px] text-paper"
                 >
                   ✕
                 </button>
+                {/* Reorder controls */}
+                <div className="absolute bottom-1 left-1 flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => moveGalleryPhoto(i, -1)}
+                    disabled={i === 0}
+                    aria-label="Move photo earlier"
+                    className="rounded bg-ink/80 px-1 text-[12px] leading-none text-paper disabled:opacity-30"
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveGalleryPhoto(i, 1)}
+                    disabled={i === photos.length - 1}
+                    aria-label="Move photo later"
+                    className="rounded bg-ink/80 px-1 text-[12px] leading-none text-paper disabled:opacity-30"
+                  >
+                    →
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

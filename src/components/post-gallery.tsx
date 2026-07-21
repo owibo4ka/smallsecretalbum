@@ -15,7 +15,16 @@ export function PostGallery({ photos }: { photos: PostPhoto[] }) {
 
   return (
     <>
-      <div className="mt-10 space-y-10">
+      {/* Skip the reading — flip through every photo in the fullscreen viewer. */}
+      <button
+        type="button"
+        onClick={() => setLightboxIndex(0)}
+        className="mt-10 text-sm text-ink/60 underline underline-offset-4 hover:text-ink"
+      >
+        Just see the photos →
+      </button>
+
+      <div className="mt-6 space-y-10">
         {photos.map((photo, i) => (
           <button
             key={photo.id}

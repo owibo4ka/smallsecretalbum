@@ -33,6 +33,17 @@ export async function setGalleryPhotoFeatured(id: string, featured: boolean) {
   return prisma.photo.update({ where: { id }, data: { featured } });
 }
 
+// Persist a new display order by writing each photo's position (0, 1, 2, …)
+// into its `order` column. Runs as one transaction so the list can't be left
+// half-reordered.
+export async function reorderGalleryPhotos(ids: string[]) {
+  await prisma.$transaction(
+    ids.map((id, index) =>
+      prisma.photo.update({ where: { id }, data: { order: index } }),
+    ),
+  );
+}
+
 export async function updateGalleryPhotoCategory(
   id: string,
   category: string | null,

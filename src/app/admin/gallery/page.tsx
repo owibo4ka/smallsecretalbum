@@ -1,10 +1,6 @@
-import Image from "next/image";
 import { getGalleryPhotos } from "@/lib/gallery";
-import { deleteGalleryPhotoAction } from "@/lib/gallery-actions";
 import { GalleryUploader } from "./gallery-uploader";
-import { CategorySelect } from "./category-select";
-import { FeaturedToggle } from "./featured-toggle";
-import { FilmInput } from "./film-input";
+import { GalleryManager } from "./gallery-manager";
 
 export const dynamic = "force-dynamic";
 
@@ -28,40 +24,22 @@ export default async function AdminGalleryPage() {
             No gallery photos yet. Upload some above.
           </p>
         ) : (
-          <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
-            {photos.map((photo) => (
-              <li key={photo.id} className="space-y-1">
-                <div className="relative aspect-square w-full overflow-hidden rounded bg-ink/5">
-                  <Image
-                    src={photo.url}
-                    alt={photo.alt ?? "Gallery photo"}
-                    fill
-                    sizes="(min-width: 640px) 33vw, 50vw"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex items-center justify-between gap-2 text-[13px]">
-                  <CategorySelect photoId={photo.id} current={photo.category} />
-                  <form action={deleteGalleryPhotoAction}>
-                    <input type="hidden" name="id" value={photo.id} />
-                    <button
-                      type="submit"
-                      className="text-red-600 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </form>
-                </div>
-                <div className="text-[13px]">
-                  <FeaturedToggle
-                    photoId={photo.id}
-                    featured={photo.featured}
-                  />
-                </div>
-                <FilmInput photoId={photo.id} current={photo.film} />
-              </li>
-            ))}
-          </ul>
+          <>
+            <p className="mt-1 text-[13px] text-ink/50">
+              Use ↑ / ↓ to set the order photos appear in the gallery and home
+              hero.
+            </p>
+            <GalleryManager
+              photos={photos.map((p) => ({
+                id: p.id,
+                url: p.url,
+                alt: p.alt,
+                category: p.category,
+                featured: p.featured,
+                film: p.film,
+              }))}
+            />
+          </>
         )}
       </section>
     </main>

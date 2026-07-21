@@ -148,9 +148,14 @@ export function HomeHero({ photos }: { photos: HeroPhoto[] }) {
           ))}
         </div>
 
-        {label && (
-          <p className="shrink-0 font-semibold tracking-tight">{label}</p>
-        )}
+        <div className="flex shrink-0 flex-col items-end gap-1 text-right">
+          <p className="text-[11px] tracking-wide text-paper/70 md:text-[12px]">
+            ✦ work in progress — new corners still being swept
+          </p>
+          {label && (
+            <p className="font-semibold tracking-tight">{label}</p>
+          )}
+        </div>
       </div>
     </section>
   );
