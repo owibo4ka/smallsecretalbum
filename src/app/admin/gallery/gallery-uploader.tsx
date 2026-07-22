@@ -30,8 +30,8 @@ export function GalleryUploader() {
     try {
       const uploaded = await Promise.all(files.map(uploadImage));
       setUrls((prev) => [...prev, ...uploaded]);
-    } catch {
-      setError("Upload failed. Try again.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed. Try again.");
     } finally {
       setUploading(false);
       e.target.value = "";

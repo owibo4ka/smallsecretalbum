@@ -70,8 +70,10 @@ export function PostForm({ post }: PostFormProps) {
     setUploadError(null);
     try {
       setCover(await uploadImage(file));
-    } catch {
-      setUploadError("Cover upload failed. Try again.");
+    } catch (err) {
+      setUploadError(
+        err instanceof Error ? err.message : "Cover upload failed. Try again.",
+      );
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -100,8 +102,10 @@ export function PostForm({ post }: PostFormProps) {
         el.focus();
         el.setSelectionRange(pos, pos);
       });
-    } catch {
-      setUploadError("Photo upload failed. Try again.");
+    } catch (err) {
+      setUploadError(
+        err instanceof Error ? err.message : "Photo upload failed. Try again.",
+      );
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -116,8 +120,12 @@ export function PostForm({ post }: PostFormProps) {
     try {
       const urls = await Promise.all(files.map(uploadImage));
       setPhotos((prev) => [...prev, ...urls]);
-    } catch {
-      setUploadError("One or more photos failed to upload. Try again.");
+    } catch (err) {
+      setUploadError(
+        err instanceof Error
+          ? err.message
+          : "One or more photos failed to upload. Try again.",
+      );
     } finally {
       setUploading(false);
       e.target.value = "";
