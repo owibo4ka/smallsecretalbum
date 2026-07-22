@@ -50,7 +50,15 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
 
       <footer className="flex items-center justify-between gap-4 px-5 pt-16 pb-5">
         <p className="leading-[1.3]">
-          © smallsecretalbum, {new Date().getFullYear()}
+          © smallsecretalbum, {new Date().getFullYear()} · Design by{" "}
+          <a
+            href="https://www.framer.com/@volodymyr-fominykh/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold transition-opacity hover:opacity-60"
+          >
+            Volodymyr Fominykh
+          </a>
         </p>
         <div className="flex items-center gap-4">
           <Link
