@@ -16,6 +16,7 @@ export default async function WorksPage() {
 
   return (
     <Gallery
+      title="works"
       photos={photos.map((p) => ({
         id: p.id,
         url: p.url,

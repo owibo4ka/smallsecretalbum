@@ -13,9 +13,9 @@ export default async function JournalPage() {
   const posts = await getPublishedPosts();
 
   return (
-    <main className="px-5 pt-24 pb-16 md:pt-32">
-      <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
-        Journal
+    <main className="px-5 pt-24 pb-16 md:pt-48">
+      <h1 className="text-[40px] leading-[1.05] font-semibold tracking-tight md:text-[48px]">
+        journal
       </h1>
 
       {posts.length === 0 ? (

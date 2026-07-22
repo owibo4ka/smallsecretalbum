@@ -14,7 +14,13 @@ type GalleryPhoto = {
   film: string | null;
 };
 
-export function Gallery({ photos }: { photos: GalleryPhoto[] }) {
+export function Gallery({
+  photos,
+  title,
+}: {
+  photos: GalleryPhoto[];
+  title?: string;
+}) {
   const [category, setCategory] = useState<string | null>(null); // null = All
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -28,7 +34,12 @@ export function Gallery({ photos }: { photos: GalleryPhoto[] }) {
   }
 
   return (
-    <main className="px-5 pt-24 pb-16 md:pt-40">
+    <main className="px-5 pt-24 pb-16 md:pt-48">
+      {title && (
+        <h1 className="mb-6 text-[40px] leading-[1.05] font-semibold tracking-tight md:mb-8 md:text-[48px]">
+          {title}
+        </h1>
+      )}
       <div className="flex items-center justify-between gap-4">
         <nav className="flex flex-wrap items-center gap-3 font-semibold">
           <button

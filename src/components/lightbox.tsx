@@ -73,11 +73,11 @@ export function Lightbox({
         >
           ‹
         </button>
-        <div className="flex min-h-0 flex-col items-center gap-2">
+        <div className="flex h-full min-h-0 flex-col items-center justify-center gap-2">
           <img
             src={current.url}
             alt={current.alt ?? "Photograph by Olha Rykhliuk"}
-            className="max-h-full max-w-full object-contain"
+            className="min-h-0 max-h-full max-w-full object-contain"
           />
           {current.film && (
             <p className="shrink-0 text-[13px] text-paper/60">{current.film}</p>
