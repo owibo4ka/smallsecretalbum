@@ -21,25 +21,31 @@ export default function SignInPage() {
     setError(null);
     setPending(true);
 
-    const result =
-      mode === "signin"
-        ? await authClient.signIn.email({ email, password })
-        : await authClient.signUp.email({
-            email,
-            password,
-            name: name || email,
-          });
+    try {
+      const result =
+        mode === "signin"
+          ? await authClient.signIn.email({ email, password })
+          : await authClient.signUp.email({
+              email,
+              password,
+              name: name || email,
+            });
 
-    setPending(false);
+      if (result.error) {
+        setError(result.error.message ?? "Something went wrong. Try again.");
+        return;
+      }
 
-    if (result.error) {
-      setError(result.error.message ?? "Something went wrong. Try again.");
-      return;
+      // Cookie is set; go to admin and refresh so the server sees the session.
+      router.push("/admin/posts");
+      router.refresh();
+    } catch {
+      // A thrown request (e.g. a rejected origin) would otherwise leave the
+      // button stuck on "Please wait…" with no explanation.
+      setError("Could not reach the sign-in service. Please try again.");
+    } finally {
+      setPending(false);
     }
-
-    // Cookie is set; go to admin and refresh so the server sees the session.
-    router.push("/admin/posts");
-    router.refresh();
   }
 
   return (
