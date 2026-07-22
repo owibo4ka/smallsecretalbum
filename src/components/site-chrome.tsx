@@ -26,8 +26,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
           </Link>
           <span className="h-4 w-px shrink-0 bg-ink" aria-hidden="true" />
           <p className="leading-[1.3] text-ink/90">
-            Street scenes and small secrets. Photography by{" "}
-            <span className="font-semibold">Olha Rykhliuk.</span>
+            Photography by <span className="font-semibold">Olha Rykhliuk.</span>
           </p>
         </div>
 

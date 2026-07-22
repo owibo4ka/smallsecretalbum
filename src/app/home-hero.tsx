@@ -132,10 +132,10 @@ export function HomeHero({ items }: { items: HeroItem[] }) {
         </nav>
       )}
 
-      {/* Caption, vertically centered: tagline for a photo, title + link for a
-          featured post. */}
-      <div className="absolute inset-0 z-10 flex items-center px-3 md:px-5">
-        {current.kind === "post" ? (
+      {/* Caption for a featured post (title + link), vertically centered.
+          Photo slides intentionally show no overlay text. */}
+      {current.kind === "post" && (
+        <div className="absolute inset-0 z-10 flex items-center px-3 md:px-5">
           <div className="max-w-[692px]">
             <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-paper/80 md:text-[12px]">
               From the journal
@@ -149,13 +149,8 @@ export function HomeHero({ items }: { items: HeroItem[] }) {
               </span>
             </Link>
           </div>
-        ) : (
-          <h1 className="max-w-[692px] text-[36px] leading-[1.05] tracking-tight md:text-[44px] lg:text-[48px]">
-            Street scenes and small secrets. Photography by{" "}
-            <span className="font-semibold">Olha Rykhliuk.</span>
-          </h1>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Bottom row: thumbnail strip (left) + slide label (right). */}
       <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-3 px-3 py-3 md:px-5 md:py-5">
