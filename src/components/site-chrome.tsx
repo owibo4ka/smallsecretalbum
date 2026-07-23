@@ -24,10 +24,6 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
           <Link href="/" className="font-semibold whitespace-nowrap">
             smallsecretalbum
           </Link>
-          <span className="h-4 w-px shrink-0 bg-ink" aria-hidden="true" />
-          <p className="leading-[1.3] text-ink/90">
-            Photography by <span className="font-semibold">Olha Rykhliuk.</span>
-          </p>
         </div>
 
         <nav className="flex shrink-0 items-center gap-3 font-semibold">
