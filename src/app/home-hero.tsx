@@ -97,7 +97,14 @@ export function HomeHero({ items }: { items: HeroItem[] }) {
           }`}
         />
       ))}
-      <div className="absolute inset-0 bg-black/30" />
+      {/* Darkening scrim: stronger on post slides so the centered title stays
+          readable; a lighter touch on photo slides — just enough contrast for
+          the header + bottom labels without dulling the photo. */}
+      <div
+        className={`absolute inset-0 ${
+          current.kind === "post" ? "bg-black/30" : "bg-black/15"
+        }`}
+      />
 
       {/* Overlaid header. */}
       <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-3 py-2 font-semibold md:px-5 md:py-3">

@@ -1,12 +1,46 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPostBySlug, getAdjacentPosts } from "@/lib/posts";
+import { AUTHOR_NAME, excerpt } from "@/lib/site";
 import { Markdown } from "@/components/markdown";
 import { PostGallery } from "@/components/post-gallery";
 
 // Always render from the current database so post edits show up right away.
 export const dynamic = "force-dynamic";
+
+// Per-post social share text + title. Share images are added in a later stage;
+// the title, description, and article metadata are in place now.
+export async function generateMetadata(
+  props: PageProps<"/posts/[slug]">,
+): Promise<Metadata> {
+  const { slug } = await props.params;
+  const post = await getPostBySlug(slug);
+
+  if (!post || !post.published) {
+    return {};
+  }
+
+  const description = excerpt(post.content);
+  return {
+    title: post.title,
+    description,
+    openGraph: {
+      title: post.title,
+      description,
+      type: "article",
+      publishedTime: post.createdAt.toISOString(),
+      authors: [AUTHOR_NAME],
+      url: `/posts/${post.slug}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description,
+    },
+  };
+}
 
 // In Next.js 16, `params` is a Promise that must be awaited. `PageProps` is a
 // global helper type generated from the route path — no import needed.
@@ -19,6 +53,17 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
   }
 
   const { previous, next } = await getAdjacentPosts(post.createdAt);
+
+  // Structured data describing this journal entry for search engines.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: excerpt(post.content),
+    datePublished: post.createdAt.toISOString(),
+    author: { "@type": "Person", name: AUTHOR_NAME },
+  };
+
   const date = post.createdAt
     .toLocaleDateString("en-US", {
       month: "short",
@@ -29,6 +74,12 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
 
   return (
     <article>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* Immersive hero: cover image with the title over it. */}
       {post.coverImageUrl ? (
         <header className="relative flex min-h-[70vh] items-center justify-center overflow-hidden">
