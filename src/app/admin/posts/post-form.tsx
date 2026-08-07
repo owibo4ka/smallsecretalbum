@@ -117,6 +117,25 @@ export function PostForm({ post }: PostFormProps) {
     }
   }
 
+  // Insert a video by pasting its link on its own line — the renderer turns a
+  // lone YouTube URL into a responsive embed. No upload, just a URL.
+  function handleInsertVideo() {
+    const url = window.prompt("Paste a YouTube link to embed:");
+    if (!url) return;
+    const snippet = `\n\n${url.trim()}\n\n`;
+    const el = contentRef.current;
+    const at = el ? el.selectionStart : content.length;
+    const nextValue = content.slice(0, at) + snippet + content.slice(at);
+    setContent(nextValue);
+    setPreview(false);
+    requestAnimationFrame(() => {
+      if (!el) return;
+      const pos = at + snippet.length;
+      el.focus();
+      el.setSelectionRange(pos, pos);
+    });
+  }
+
   async function handleGallery(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
@@ -168,6 +187,13 @@ export function PostForm({ post }: PostFormProps) {
                 className="hidden"
               />
             </label>
+            <button
+              type="button"
+              onClick={handleInsertVideo}
+              className="font-semibold text-ink/60 hover:text-ink"
+            >
+              + Insert video
+            </button>
             <span className="text-ink/20">|</span>
             <button
               type="button"
