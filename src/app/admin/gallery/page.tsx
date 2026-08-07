@@ -37,6 +37,8 @@ export default async function AdminGalleryPage() {
                 category: p.category,
                 featured: p.featured,
                 film: p.film,
+                focalX: p.focalX,
+                focalY: p.focalY,
               }))}
             />
           </>

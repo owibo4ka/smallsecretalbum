@@ -5,6 +5,7 @@ import Image from "next/image";
 import { savePost, type PostFormState } from "@/lib/actions";
 import { uploadImage } from "@/lib/upload-client";
 import { Markdown } from "@/components/markdown";
+import { FocalSliders } from "@/app/admin/gallery/focal-sliders";
 
 type PostFormProps = {
   post?: {
@@ -13,6 +14,8 @@ type PostFormProps = {
     content: string;
     published: boolean;
     coverImageUrl: string | null;
+    coverFocalX: number;
+    coverFocalY: number;
     photos: { url: string }[];
   };
 };
@@ -42,6 +45,8 @@ export function PostForm({ post }: PostFormProps) {
   const [preview, setPreview] = useState(false);
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const [cover, setCover] = useState<string | null>(post?.coverImageUrl ?? null);
+  const [coverFocalX, setCoverFocalX] = useState(post?.coverFocalX ?? 50);
+  const [coverFocalY, setCoverFocalY] = useState(post?.coverFocalY ?? 50);
   const [photos, setPhotos] = useState<string[]>(
     post?.photos.map((p) => p.url) ?? [],
   );
@@ -219,6 +224,8 @@ export function PostForm({ post }: PostFormProps) {
       <div>
         <span className="block font-semibold">Cover image</span>
         <input type="hidden" name="coverImageUrl" value={cover ?? ""} />
+        <input type="hidden" name="coverFocalX" value={coverFocalX} />
+        <input type="hidden" name="coverFocalY" value={coverFocalY} />
         {cover && (
           <div className="mt-2 flex items-start gap-3">
             <Image
@@ -236,6 +243,25 @@ export function PostForm({ post }: PostFormProps) {
               Remove
             </button>
           </div>
+        )}
+        {cover && (
+          <details className="group mt-2">
+            <summary className="cursor-pointer list-none text-[13px] text-ink/50 hover:text-ink/80">
+              <span className="inline-block transition-transform group-open:rotate-90">
+                ▸
+              </span>{" "}
+              Crop focus (header &amp; home hero)
+            </summary>
+            <div className="mt-2 max-w-xs">
+              <FocalSliders
+                url={cover}
+                x={coverFocalX}
+                y={coverFocalY}
+                onChangeX={setCoverFocalX}
+                onChangeY={setCoverFocalY}
+              />
+            </div>
+          </details>
         )}
         <input
           type="file"

@@ -15,6 +15,10 @@ export type HeroItem =
       url: string;
       category: string | null;
       alt: string | null;
+      // Crop focal point (percentages); drives object-position so the subject
+      // stays in frame when the photo is cover-cropped to fill the screen.
+      focalX: number;
+      focalY: number;
     }
   | {
       kind: "post";
@@ -22,6 +26,9 @@ export type HeroItem =
       url: string;
       title: string;
       slug: string;
+      // Crop focal point for the post's cover image (percentages).
+      focalX: number;
+      focalY: number;
     };
 
 const ROTATE_MS = 6000;
@@ -92,6 +99,7 @@ export function HomeHero({ items }: { items: HeroItem[] }) {
               : ""
           }
           aria-hidden={i !== active}
+          style={{ objectPosition: `${item.focalX}% ${item.focalY}%` }}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
             i === active ? "opacity-100" : "opacity-0"
           }`}
@@ -161,7 +169,7 @@ export function HomeHero({ items }: { items: HeroItem[] }) {
 
       {/* Bottom row: thumbnail strip (left) + slide label (right). */}
       <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-3 px-3 py-3 md:px-5 md:py-5">
-        <div className="flex w-[86px] flex-col gap-2.5 md:w-[400px] md:flex-row md:items-end md:gap-4 lg:w-[549px]">
+        <div className="flex w-[72%] max-w-[340px] flex-row items-end gap-1.5 md:w-[400px] md:max-w-none md:gap-4 lg:w-[549px]">
           {items.map((item, i) => (
             <button
               key={item.id}
@@ -169,7 +177,7 @@ export function HomeHero({ items }: { items: HeroItem[] }) {
               onClick={() => setActive(i)}
               aria-label={`Show slide ${i + 1}`}
               aria-current={i === active}
-              className={`relative aspect-[3/2] w-full overflow-hidden transition-opacity md:min-w-0 md:flex-1 ${
+              className={`relative aspect-[3/2] w-full min-w-0 flex-1 overflow-hidden transition-opacity ${
                 i === active ? "opacity-60" : "opacity-100 hover:opacity-80"
               }`}
             >
