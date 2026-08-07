@@ -25,6 +25,8 @@ export default async function Home() {
       url: p.coverImageUrl as string,
       title: p.title,
       slug: p.slug,
+      focalX: p.coverFocalX,
+      focalY: p.coverFocalY,
     }));
 
   const photoItems: HeroItem[] = photos.map((p) => ({
@@ -33,6 +35,8 @@ export default async function Home() {
     url: p.url,
     category: p.category,
     alt: p.alt,
+    focalX: p.focalX,
+    focalY: p.focalY,
   }));
 
   return <HomeHero items={[...postItems, ...photoItems]} />;

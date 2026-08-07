@@ -55,6 +55,19 @@ export async function updateGalleryPhotoFilm(id: string, film: string | null) {
   return prisma.photo.update({ where: { id }, data: { film } });
 }
 
+// Store a photo's crop focal point (percentages, clamped to 0–100).
+export async function updateGalleryPhotoFocal(
+  id: string,
+  focalX: number,
+  focalY: number,
+) {
+  const clamp = (n: number) => Math.min(100, Math.max(0, Math.round(n)));
+  return prisma.photo.update({
+    where: { id },
+    data: { focalX: clamp(focalX), focalY: clamp(focalY) },
+  });
+}
+
 export async function deleteGalleryPhoto(id: string) {
   return prisma.photo.delete({ where: { id } });
 }

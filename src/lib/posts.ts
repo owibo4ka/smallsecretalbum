@@ -23,7 +23,14 @@ export async function getFeaturedPosts() {
   return prisma.post.findMany({
     where: { published: true, featured: true },
     orderBy: { createdAt: "desc" },
-    select: { id: true, slug: true, title: true, coverImageUrl: true },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      coverImageUrl: true,
+      coverFocalX: true,
+      coverFocalY: true,
+    },
   });
 }
 
@@ -69,6 +76,8 @@ type PostInput = {
   content: string;
   published: boolean;
   coverImageUrl: string | null;
+  coverFocalX: number;
+  coverFocalY: number;
   photoUrls: string[];
 };
 

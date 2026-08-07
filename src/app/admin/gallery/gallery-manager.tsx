@@ -10,6 +10,7 @@ import { CATEGORIES } from "@/lib/categories";
 import { CategorySelect } from "./category-select";
 import { FeaturedToggle } from "./featured-toggle";
 import { FilmInput } from "./film-input";
+import { FocalControl } from "./focal-control";
 
 type ManagedPhoto = {
   id: string;
@@ -18,6 +19,8 @@ type ManagedPhoto = {
   category: string | null;
   featured: boolean;
   film: string | null;
+  focalX: number;
+  focalY: number;
 };
 
 // The gallery grid: filter by category, reorder with ↑/↓ (applied instantly and
@@ -135,6 +138,26 @@ export function GalleryManager({ photos: initial }: { photos: ManagedPhoto[] }) 
                 <FeaturedToggle photoId={photo.id} featured={photo.featured} />
               </div>
               <FilmInput photoId={photo.id} current={photo.film} />
+              {/* Crop focus only matters for the home hero, which shows only
+                  featured photos — so hide it on the rest. */}
+              {photo.featured && (
+                <details className="group pt-0.5">
+                  <summary className="cursor-pointer list-none text-[11px] text-ink/50 hover:text-ink/80">
+                    <span className="inline-block transition-transform group-open:rotate-90">
+                      ▸
+                    </span>{" "}
+                    Crop focus (home hero)
+                  </summary>
+                  <div className="pt-1.5">
+                    <FocalControl
+                      photoId={photo.id}
+                      url={photo.url}
+                      focalX={photo.focalX}
+                      focalY={photo.focalY}
+                    />
+                  </div>
+                </details>
+              )}
             </li>
           ))}
         </ul>

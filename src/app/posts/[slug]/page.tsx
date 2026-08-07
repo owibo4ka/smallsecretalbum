@@ -89,6 +89,7 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
             fill
             priority
             sizes="100vw"
+            style={{ objectPosition: `${post.coverFocalX}% ${post.coverFocalY}%` }}
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/35" />

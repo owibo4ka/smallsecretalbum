@@ -5,6 +5,7 @@ import Image from "next/image";
 import { savePost, type PostFormState } from "@/lib/actions";
 import { uploadImage } from "@/lib/upload-client";
 import { Markdown } from "@/components/markdown";
+import { FocalSliders } from "@/app/admin/gallery/focal-sliders";
 
 type PostFormProps = {
   post?: {
@@ -13,6 +14,8 @@ type PostFormProps = {
     content: string;
     published: boolean;
     coverImageUrl: string | null;
+    coverFocalX: number;
+    coverFocalY: number;
     photos: { url: string }[];
   };
 };
@@ -42,6 +45,8 @@ export function PostForm({ post }: PostFormProps) {
   const [preview, setPreview] = useState(false);
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const [cover, setCover] = useState<string | null>(post?.coverImageUrl ?? null);
+  const [coverFocalX, setCoverFocalX] = useState(post?.coverFocalX ?? 50);
+  const [coverFocalY, setCoverFocalY] = useState(post?.coverFocalY ?? 50);
   const [photos, setPhotos] = useState<string[]>(
     post?.photos.map((p) => p.url) ?? [],
   );
@@ -112,6 +117,25 @@ export function PostForm({ post }: PostFormProps) {
     }
   }
 
+  // Insert a video by pasting its link on its own line — the renderer turns a
+  // lone YouTube URL into a responsive embed. No upload, just a URL.
+  function handleInsertVideo() {
+    const url = window.prompt("Paste a YouTube link to embed:");
+    if (!url) return;
+    const snippet = `\n\n${url.trim()}\n\n`;
+    const el = contentRef.current;
+    const at = el ? el.selectionStart : content.length;
+    const nextValue = content.slice(0, at) + snippet + content.slice(at);
+    setContent(nextValue);
+    setPreview(false);
+    requestAnimationFrame(() => {
+      if (!el) return;
+      const pos = at + snippet.length;
+      el.focus();
+      el.setSelectionRange(pos, pos);
+    });
+  }
+
   async function handleGallery(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
@@ -163,6 +187,13 @@ export function PostForm({ post }: PostFormProps) {
                 className="hidden"
               />
             </label>
+            <button
+              type="button"
+              onClick={handleInsertVideo}
+              className="font-semibold text-ink/60 hover:text-ink"
+            >
+              + Insert video
+            </button>
             <span className="text-ink/20">|</span>
             <button
               type="button"
@@ -219,6 +250,8 @@ export function PostForm({ post }: PostFormProps) {
       <div>
         <span className="block font-semibold">Cover image</span>
         <input type="hidden" name="coverImageUrl" value={cover ?? ""} />
+        <input type="hidden" name="coverFocalX" value={coverFocalX} />
+        <input type="hidden" name="coverFocalY" value={coverFocalY} />
         {cover && (
           <div className="mt-2 flex items-start gap-3">
             <Image
@@ -236,6 +269,25 @@ export function PostForm({ post }: PostFormProps) {
               Remove
             </button>
           </div>
+        )}
+        {cover && (
+          <details className="group mt-2">
+            <summary className="cursor-pointer list-none text-[13px] text-ink/50 hover:text-ink/80">
+              <span className="inline-block transition-transform group-open:rotate-90">
+                ▸
+              </span>{" "}
+              Crop focus (header &amp; home hero)
+            </summary>
+            <div className="mt-2 max-w-xs">
+              <FocalSliders
+                url={cover}
+                x={coverFocalX}
+                y={coverFocalY}
+                onChangeX={setCoverFocalX}
+                onChangeY={setCoverFocalY}
+              />
+            </div>
+          </details>
         )}
         <input
           type="file"

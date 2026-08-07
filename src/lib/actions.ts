@@ -48,10 +48,19 @@ export async function savePost(
     .getAll("photoUrls")
     .filter((v): v is string => typeof v === "string" && v.length > 0);
 
+  // Cover crop focal point (percentages). Fall back to centered (50) if the
+  // field is missing or not a number.
+  const clampFocal = (raw: FormDataEntryValue | null) => {
+    const n = Number(raw);
+    return Number.isFinite(n) ? Math.min(100, Math.max(0, Math.round(n))) : 50;
+  };
+
   const data = {
     ...parsed.data,
     slug: slugify(parsed.data.title),
     coverImageUrl,
+    coverFocalX: clampFocal(formData.get("coverFocalX")),
+    coverFocalY: clampFocal(formData.get("coverFocalY")),
     photoUrls,
   };
 

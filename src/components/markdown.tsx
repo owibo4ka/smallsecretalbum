@@ -3,9 +3,71 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+// A minimal shape for the hast nodes react-markdown hands to component
+// renderers — enough to pull the plain text back out of a node.
+type HastNode = {
+  type?: string;
+  value?: string;
+  children?: HastNode[];
+};
+
+// Flatten a node's text content (used to detect a paragraph that is just a URL).
+function nodeText(node: HastNode | undefined): string {
+  if (!node) return "";
+  if (node.type === "text") return node.value ?? "";
+  return (node.children ?? []).map(nodeText).join("");
+}
+
+// Extract an 11-char YouTube video id from the common URL shapes, or null.
+function youTubeId(raw: string): string | null {
+  let url: URL;
+  try {
+    url = new URL(raw);
+  } catch {
+    return null;
+  }
+  const host = url.hostname.replace(/^www\./, "");
+  const ok = (id: string | null | undefined) =>
+    id && /^[\w-]{11}$/.test(id) ? id : null;
+
+  if (host === "youtu.be") return ok(url.pathname.slice(1));
+  if (
+    host === "youtube.com" ||
+    host === "m.youtube.com" ||
+    host === "youtube-nocookie.com"
+  ) {
+    if (url.pathname === "/watch") return ok(url.searchParams.get("v"));
+    const m = url.pathname.match(/^\/(?:embed|shorts|v)\/([\w-]{11})/);
+    if (m) return ok(m[1]);
+  }
+  return null;
+}
+
+// A privacy-friendly (nocookie), responsive 16:9 YouTube embed.
+function YouTubeEmbed({ id }: { id: string }) {
+  return (
+    <div
+      className="relative my-6 overflow-hidden rounded bg-ink/5"
+      style={{ paddingTop: "56.25%" }}
+    >
+      <iframe
+        src={`https://www.youtube-nocookie.com/embed/${id}`}
+        title="Embedded video"
+        loading="lazy"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+        className="absolute inset-0 h-full w-full border-0"
+      />
+    </div>
+  );
+}
+
 // Renders Markdown as styled HTML. react-markdown escapes raw HTML by default,
 // so this is safe. Element styles are mapped to Tailwind to match the site's
 // look (Urbanist, ink tones). Reused by blog posts and the about bio.
+//
+// Video: a paragraph that is nothing but a YouTube URL is turned into a
+// responsive embed — so authors paste a link on its own line, no raw HTML.
 export function Markdown({ children }: { children: string }) {
   return (
     <div className="space-y-4 leading-[1.6] text-ink/80">
@@ -25,7 +87,16 @@ export function Markdown({ children }: { children: string }) {
           h3: ({ children }) => (
             <h3 className="mt-6 text-lg font-semibold text-ink">{children}</h3>
           ),
-          p: ({ children }) => <p>{children}</p>,
+          p: ({ children, node }) => {
+            // If the whole paragraph is a single YouTube URL, embed the video
+            // instead of rendering a bare link.
+            const text = nodeText(node as HastNode).trim();
+            if (/^\S+$/.test(text)) {
+              const id = youTubeId(text);
+              if (id) return <YouTubeEmbed id={id} />;
+            }
+            return <p>{children}</p>;
+          },
           a: ({ href, children }) => {
             const external = !!href && /^https?:\/\//.test(href);
             return (

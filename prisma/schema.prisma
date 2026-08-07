@@ -19,6 +19,11 @@ model Post {
   content       String
   published     Boolean  @default(false)
   coverImageUrl String?
+  // Focal point for the cover image (percentages, 0–100), used as CSS
+  // object-position wherever the cover is shown cover-cropped: the post's
+  // header and the home hero. 50/50 is centered (the default).
+  coverFocalX   Int      @default(50)
+  coverFocalY   Int      @default(50)
   // When true, this post appears as a slide in the home hero (cover image +
   // title linking to the post).
   featured      Boolean  @default(false)
@@ -60,6 +65,11 @@ model Photo {
   featured  Boolean  @default(false)
   // Optional film stock the photo was shot on (e.g. "Kodak Portra 400").
   film      String?
+  // Focal point for cropping, as percentages (0–100). Drives CSS
+  // object-position when the photo is shown cover-cropped (e.g. the home hero),
+  // so the important part stays in frame. 50/50 is dead-center (the default).
+  focalX    Int      @default(50)
+  focalY    Int      @default(50)
   // A photo belongs to a post (the per-post gallery). Deleting the post
   // removes its photo rows too. Standalone gallery photos have no post.
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)

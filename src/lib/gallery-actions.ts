@@ -9,6 +9,7 @@ import {
   setGalleryPhotoFeatured,
   updateGalleryPhotoCategory,
   updateGalleryPhotoFilm,
+  updateGalleryPhotoFocal,
 } from "@/lib/gallery";
 
 export async function addGalleryPhotosAction(
@@ -59,6 +60,25 @@ export async function updateGalleryPhotoFilmAction(formData: FormData) {
   const film = ((formData.get("film") as string) ?? "").trim() || null;
   if (typeof id === "string" && id.length > 0) {
     await updateGalleryPhotoFilm(id, film);
+    revalidatePath("/");
+    revalidatePath("/works");
+    revalidatePath("/admin/gallery");
+  }
+}
+
+export async function updateGalleryPhotoFocalAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = formData.get("id");
+  const focalX = Number(formData.get("focalX"));
+  const focalY = Number(formData.get("focalY"));
+  if (
+    typeof id === "string" &&
+    id.length > 0 &&
+    Number.isFinite(focalX) &&
+    Number.isFinite(focalY)
+  ) {
+    await updateGalleryPhotoFocal(id, focalX, focalY);
     revalidatePath("/");
     revalidatePath("/works");
     revalidatePath("/admin/gallery");
